@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
+import re
 
 def get_valid_url():
     while True:
@@ -29,22 +30,16 @@ def detect_js_and_py_files(url):
         # Find all <a> tags with href ending in '.py'
         py_links = soup.find_all('a', href=lambda href: href and href.endswith('.py'))
 
-        # Print JavaScript scripts
-        if script_tags:
-            print("JavaScript scripts detected on the page:")
+        # Print JavaScript scripts and links to JavaScript files
+        if script_tags or js_links:
+            print("JavaScript scripts and links to JavaScript files detected on the page:")
             for script_tag in script_tags:
                 print(script_tag)
-        else:
-            print("No JavaScript scripts detected on the page.")
-
-        # Print links to JavaScript files
-        if js_links:
-            print("\nLinks to JavaScript files found on the page:")
             for link in js_links:
                 js_url = urljoin(url, link['href'])
                 print(js_url)
         else:
-            print("\nNo links to JavaScript files found on the page.")
+            print("No JavaScript scripts or links to JavaScript files found on the page.")
 
         # Print links to Python files
         if py_links:
@@ -54,6 +49,11 @@ def detect_js_and_py_files(url):
                 print(py_url)
         else:
             print("\nNo links to Python files found on the page.")
+
+        # Check for threats
+        page_content = response.text
+        if re.search(r'phish|malware|spyware|virus', page_content, re.IGNORECASE):
+            print("\nWarning: Suspicious keywords found in page content.")
 
     except requests.RequestException as e:
         print(f"Error fetching URL: {e}")
