@@ -5,7 +5,7 @@ import re
 
 def get_valid_url():
     while True:
-        url = input("Enter the URL of the website you want to scrape: ").strip()
+        url = input("\nEnter the URL of the website you want to scrape: ").strip()
         parsed_url = urlparse(url)
         if parsed_url.scheme and parsed_url.netloc:
             return url
@@ -32,28 +32,30 @@ def detect_js_and_py_files(url):
 
         # Print JavaScript scripts and links to JavaScript files
         if script_tags or js_links:
-            print("JavaScript scripts and links to JavaScript files detected on the page:")
+            print("\n________________\nJavaScript scripts and links to JavaScript files detected on the page:\n")
             for script_tag in script_tags:
                 print(script_tag)
             for link in js_links:
                 js_url = urljoin(url, link['href'])
                 print(js_url)
         else:
-            print("No JavaScript scripts or links to JavaScript files found on the page.")
+            print("\n===============================================================\nNo JavaScript scripts or links to JavaScript files found on the page.\n===============================================================")
 
         # Print links to Python files
         if py_links:
-            print("\nLinks to Python files found on the page:")
+            print("\n___________\nLinks to Python files found on the page:")
             for link in py_links:
                 py_url = urljoin(url, link['href'])
-                print(py_url)
+                print(py_url+ "\n__________")
         else:
-            print("\nNo links to Python files found on the page.")
+            print("\n===============================================================\nNo links to Python files found on the page.\n===============================================================")
 
         # Check for threats
         page_content = response.text
         if re.search(r'phish|malware|spyware|virus', page_content, re.IGNORECASE):
-            print("\nWarning: Suspicious keywords found in page content.")
+            print("\n!!!!!!!!!!!!!!!!!!\nWarning: Suspicious keywords found in page content\n!!!!!!!!!!!!!!!!!!\n")
+        else: 
+            print("\n===============================================================\nApparently, there are no threats on this page, but be aware!!!\n===============================================================")
 
     except requests.RequestException as e:
         print(f"Error fetching URL: {e}")
